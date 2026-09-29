@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance Advisor Bot — AI-Powered Budget & Expense Tracker</title>
+  <meta name="description" content="Intelligent personal finance assistant for tracking income, managing expenses, and receiving automated AI financial advice.">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<div class="app-shell">
+  <!-- Left Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">₹</span>
+      <div>
+        <b>FINANCE BOT</b>
+        <small>AI WEALTH ADVISOR</small>
+      </div>
+    </div>
+    
+    <nav>
+      <a class="active">▦ <span>Dashboard</span></a>
+      <a>📊 <span>Analytics</span></a>
+      <a>🎯 <span>Budget Goals</span></a>
+      <a>💡 <span>AI Advisor</span></a>
+      <a>⚙️ <span>Settings</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span>Personal Finance Bot v2.0</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="crumb">
+        Dashboard &nbsp;›&nbsp; Personal Finance &nbsp;›&nbsp; <b>Advisor Bot</b>
+      </div>
+      <div class="top-actions">
+        <div id="connectionStatus" class="status-badge" title="Status">
+          <span class="indicator live"></span> Initializing...
+        </div>
+        <button class="btn btn-ghost" onclick="loadDemoData()" title="Pre-populate realistic sample data">✨ Demo Data</button>
+        <button class="btn btn-ghost" onclick="exportCSV()" title="Download CSV summary">📥 Export</button>
+        <button class="btn btn-danger-ghost" onclick="resetAllData()" title="Clear records">🗑️ Reset</button>
+        <span class="avatar">AK</span>
+      </div>
+    </header>
+
+    <!-- Project Heading Banner -->
+    <section class="project-head">
+      <div>
+        <h1>Personal Finance Advisor Bot 💰</h1>
+        <p>Intelligent financial assistant for automated budget tracking, spending analysis, and actionable saving strategies.</p>
+      </div>
+      <div class="head-actions">
+        <div class="tabs">
+          <button class="nav-tab selected" data-target="tab-overview">Overview</button>
+          <button class="nav-tab" data-target="tab-budget">50/30/20 Rule</button>
+          <button class="nav-tab" data-target="tab-kanban">Roadmap</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero Announcement Notice -->
+    <div class="notice">
+      <div class="notice-content">
+        <div class="notice-icon">✨</div>
+        <div>
+          <b>Smart Financial Insights Enabled</b>
+          <p>Real-time expense categorization and rule-based budget recommendations powered by Python Flask & Client Mode.</p>
+        </div>
+      </div>
+      <div class="notice-buttons">
+        <button class="btn btn-white" onclick="document.getElementById('amount').focus()">➕ Log Transaction</button>
+      </div>
+    </div>
+
+    <!-- Main Grid Content -->
+    <section class="grid">
+      <!-- Left Content Column -->
+      <div class="content">
+        <!-- 4-Metric Overview Cards -->
+        <div class="stats-grid">
+          <div class="stat-card purple-grad">
+            <small>Monthly Income</small>
+            <strong id="income">₹0.00</strong>
+            <span class="stat-sub">Logged earnings</span>
+          </div>
+          <div class="stat-card amber-grad">
+            <small>Total Expenses</small>
+            <strong id="expense">₹0.00</strong>
+            <span class="stat-sub">Total spent</span>
+          </div>
+          <div class="stat-card blue-grad">
+            <small>Net Balance</small>
+            <strong id="balance">₹0.00</strong>
+            <span class="stat-sub">Available savings</span>
+          </div>
+          <div class="stat-card green-grad">
+            <small>Savings Rate</small>
+            <strong id="savingsRate">0%</strong>
+            <span class="stat-sub">Target: 20%+</span>
+          </div>
+        </div>
+
+        <!-- AI Advisor Insight Card -->
+        <div id="adviceCard" class="advisor-card advisor-info">
+          <div class="bot-icon">AI</div>
+          <div class="advisor-body">
+            <h3 id="adviceTitle">AI Financial Insight</h3>
+            <p id="adviceText">Add your monthly income and expenses to generate a personalized spending and savings plan.</p>
+          </div>
+        </div>
+
+        <!-- Tab Pane: Overview -->
+        <div id="tab-overview" class="tab-pane">
+          <!-- Finance Workspace & Form -->
+          <div class="card">
+            <div class="section-title">
+              <h2>Finance Workspace</h2>
+              <span id="status"><span class="indicator live"></span> Ready</span>
+            </div>
+            
+            <div class="workspace-grid">
+              <!-- Form -->
+              <form id="txForm">
+                <div class="seg">
+                  <button type="button" class="kind active" data-kind="expense">Expense</button>
+                  <button type="button" class="kind" data-kind="income">Income</button>
+                </div>
+
+                <div class="form-group">
+                  <label for="amount">Amount (₹)</label>
+                  <input id="amount" type="number" min="0.01" step="0.01" placeholder="Enter amount (e.g. 1500)" required>
+                  <div class="quick-amts">
+                    <button type="button" class="quick-amt" data-val="500">+500</button>
+                    <button type="button" class="quick-amt" data-val="1000">+1k</button>
+                    <button type="button" class="quick-amt" data-val="2500">+2.5k</button>
+                    <button type="button" class="quick-amt" data-val="5000">+5k</button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="category">Category</label>
+                  <select id="category">
+                    <option value="Food">🍔 Food & Dining</option>
+                    <option value="Transport">🚗 Transport & Fuel</option>
+                    <option value="Rent">🏠 Rent & Housing</option>
+                    <option value="Education">📚 Education & Courses</option>
+                    <option value="Shopping">🛍️ Shopping</option>
+                    <option value="Utilities">💡 Utilities & Bills</option>
+                    <option value="Healthcare">🏥 Healthcare</option>
+                    <option value="Entertainment">🍿 Entertainment</option>
+                    <option value="Salary">💼 Salary / Freelance</option>
+                    <option value="Investment">📈 Investments & Dividends</option>
+                    <option value="Other">🪙 Other</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="note">Description / Note</label>
+                  <input id="note" placeholder="Optional details (e.g. Grocery bill)">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Record</button>
+              </form>
+
+              <!-- Category Spending Breakdown -->
+              <div>
+                <div class="section-title" style="margin-bottom:12px">
+                  <h2>Spending Breakdown</h2>
+                  <small>By Category</small>
+                </div>
+                <div id="categoryBreakdown" class="cat-progress-list">
+                  <div class="empty-state">No expenses logged yet.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Transactions Table Card -->
+          <div class="card" style="margin-top:20px">
+            <div class="section-title">
+              <h2>Recent Transactions</h2>
+              <button class="btn btn-ghost" onclick="loadAll()">🔄 Refresh</button>
+            </div>
+
+            <!-- Table Filters & Search -->
+            <div class="table-controls">
+              <div class="filter-group">
+                <button class="table-filter-btn active" data-filter="all">All</button>
+                <button class="table-filter-btn" data-filter="income">Income</button>
+                <button class="table-filter-btn" data-filter="expense">Expense</button>
+              </div>
+
+              <div class="search-box">
+                <input id="tableSearch" type="text" placeholder="🔍 Search records...">
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Note</th>
+                    <th>Date</th>
+                    <th style="text-align:right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="transactions">
+                  <!-- Injected by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Pane: Budget Guidelines (50/30/20 Rule) -->
+        <div id="tab-budget" class="tab-pane" style="display:none">
+          <div class="card">
+            <h2>The 50/30/20 Budgeting Rule</h2>
+            <p style="color:var(--text-muted);font-size:13px;line-height:1.6">
+              A proven framework for allocating after-tax income to balance daily living, personal lifestyle, and future financial freedom:
+            </p>
+            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;margin:20px 0">
+              <div style="padding:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px">
+                <h3 style="margin:0 0 6px;color:#166534">50% Needs</h3>
+                <p style="margin:0;font-size:12px;color:#374151">Housing, groceries, utilities, basic healthcare, and commute.</p>
+              </div>
+              <div style="padding:16px;background:#fefce8;border:1px solid #fef08a;border-radius:10px">
+                <h3 style="margin:0 0 6px;color:#854d0e">30% Wants</h3>
+                <p style="margin:0;font-size:12px;color:#374151">Dining out, entertainment, shopping, hobbies, and vacations.</p>
+              </div>
+              <div style="padding:16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px">
+                <h3 style="margin:0 0 6px;color:#1e40af">20% Savings</h3>
+                <p style="margin:0;font-size:12px;color:#374151">Emergency funds, retirement accounts, investments, and debt paydown.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Pane: Roadmap -->
+        <div id="tab-kanban" class="tab-pane" style="display:none">
+          <div class="card">
+            <h2>Implementation Roadmap</h2>
+            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;margin-top:16px">
+              <div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0">
+                <h4 style="margin:0 0 8px;color:#059669">✅ Completed</h4>
+                <ul style="font-size:12px;margin:0;padding-left:18px;color:#475569;line-height:1.8">
+                  <li>SQLite Database & Schema</li>
+                  <li>Flask RESTful APIs</li>
+                  <li>Income & Expense Tracking</li>
+                  <li>Real-time Category Analysis</li>
+                  <li>Dual-mode Cloud & Server</li>
+                </ul>
+              </div>
+              <div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0">
+                <h4 style="margin:0 0 8px;color:#2563eb">🚀 Deployed</h4>
+                <ul style="font-size:12px;margin:0;padding-left:18px;color:#475569;line-height:1.8">
+                  <li>GitHub Public Repository</li>
+                  <li>GitHub Pages Live Hosting</li>
+                  <li>Client LocalStorage Engine</li>
+                  <li>CSV Export & Seeding</li>
+                </ul>
+              </div>
+              <div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0">
+                <h4 style="margin:0 0 8px;color:#d97706">🔮 Upcoming</h4>
+                <ul style="font-size:12px;margin:0;padding-left:18px;color:#475569;line-height:1.8">
+                  <li>Gemini AI Multi-turn Chat</li>
+                  <li>Bank Statement PDF Parsing</li>
+                  <li>Multi-currency conversion</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar Column -->
+      <aside class="right">
+        <!-- Progress Card -->
+        <div class="progress-card">
+          <div class="progress-title">
+            <b>Project Status</b>
+            <strong>100% Ready</strong>
+          </div>
+          <div class="bar">
+            <i></i>
+          </div>
+          <div class="mini">
+            <span>Complexity: Medium</span>
+            <span>Mode: Full Stack</span>
+            <span>Testing: Passed</span>
+          </div>
+        </div>
+
+        <!-- Project Epics Card -->
+        <div class="card">
+          <h3>Project Epics</h3>
+          <details open>
+            <summary>Epic 1: Architecture & Model</summary>
+            <p>Define the finance workflow, database structure, and AI advisor rule matrix.</p>
+          </details>
+          <details open>
+            <summary>Epic 2: Core Functionalities</summary>
+            <p>Income, expenses, dynamic category aggregation, and balance calculation.</p>
+          </details>
+          <details open>
+            <summary>Epic 3: Flask & SQLite Backend</summary>
+            <p>REST endpoints for transaction creation, deletion, demo seeding, and summary generation.</p>
+          </details>
+          <details open>
+            <summary>Epic 4: Modern Responsive Frontend</summary>
+            <p>Interactive dashboard, category progress bars, filterable table, and toast system.</p>
+          </details>
+          <details open>
+            <summary>Epic 5: Cloud & GitHub Pages Deployment</summary>
+            <p>GitHub repository sync, GitHub Pages deployment with seamless client fallback.</p>
+          </details>
+        </div>
+
+        <!-- Skills Required Card -->
+        <div class="card">
+          <h3>Tech Stack & Skills</h3>
+          <div class="skills">
+            <span>Python 3</span>
+            <span>Flask</span>
+            <span>SQLite</span>
+            <span>JavaScript ES6</span>
+            <span>CSS3 / Flexbox</span>
+            <span>HTML5</span>
+            <span>GitHub Pages</span>
+          </div>
+        </div>
+
+        <!-- Technical Architecture Diagram -->
+        <div class="card">
+          <h3>System Architecture</h3>
+          <div class="architecture">
+            [ User Interface ]<br>
+            ↓ (REST / LocalStorage)<br>
+            [ Dual Engine (Flask / Client) ]<br>
+            ↙ &nbsp; &nbsp; &nbsp; &nbsp; ↘<br>
+            [ SQLite DB ] &nbsp; &nbsp; [ AI Rule Engine ]
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</div>
+
+<script src="static/app.js"></script>
+</body>
+</html>
